@@ -70,7 +70,7 @@ git clone https://github.com/frankheat/frida-jdwp-loader.git
 cd frida-jdwp-loader
 ```
 
-### Example Usage
+## Quick Start
 
 ```bash
 # Auto-download and inject frida-gadget.so
@@ -93,6 +93,34 @@ python frida-jdwp-loader.py frida -n com.example.myapplication -i script -l scri
 
 # Inject all files from directory
 python frida-jdwp-loader.py custom -n com.example.myapplication -l /path/to/lib_directory/
+```
+
+# Usage Examples
+
+## Running Frida Gadget in listen Interaction Mode
+
+In this example we expose a frida-server compatible interface so you can attach to the process remotely. Ensure the target application declares the `INTERNET`; without it, remote connections will fail.
+
+![image](https://github.com/user-attachments/assets/b130f68a-296d-498b-ad3a-9e0a2f32a83f)
+
+## Running the Script Fully Autonomously
+
+In this example we inject and run the instrumentation script directly inside the target process so it runs independently. If you need to collect runtime output while running this way, call Android’s native logging functions from your frida code. These logs will appear in Logcat.
+
+https://github.com/user-attachments/assets/1639a833-76fc-4a8d-9750-9a8467689c4d
+
+**Script used in the video**
+
+```javascript
+var android_log_write = new NativeFunction(
+    Module.getExportByName(null, '__android_log_write'),
+    'int',
+    ['int', 'pointer', 'pointer']
+);
+
+var tag = Memory.allocUtf8String('frida-script');
+
+android_log_write(3, tag, Memory.allocUtf8String('hello world'));
 ```
 
 # Command line options
